@@ -10,6 +10,13 @@ requires-python = ">=3.11"
 license = "MIT"
 dependencies = ["httpx>=0.28.1,<0.29", "Pillow>=11", "numpy>=1.25", "av>=17"]
 
+[project.urls]
+Repository = "https://github.com/Neko1t/ComfyUI-plugin"
+
+[tool.comfy]
+PublisherId = "neko1t"
+DisplayName = "ComfyUI VividAI"
+
 [dependency-groups]
 dev = ["pytest>=8.3", "ruff>=0.12", "aiohttp>=3.11"]
 
