@@ -14,7 +14,10 @@ DEFAULT_RULE = {
     "min_audios": 0,
     "qualities": ["720p", "1080p", "1K", "2K"],
     "ratios": ["16:9", "9:16", "1:1"],
-    "duration_required": False,
+    # VividAI's current /v1/generate contract requires duration for video
+    # generation. Image payloads ignore this field; individual models can
+    # still override it in the workflow's per-model capability configuration.
+    "duration_required": True,
     "duration_min": 1,
     "duration_max": 30,
     "durations": [],
@@ -155,6 +158,8 @@ def payload(snapshot: dict, *, reference_counts: dict) -> dict:
     if not is_image and ratio not in {"16:9", "9:16"}:
         raise ValueError("VividAI 视频比例仅支持 16:9 或 9:16")
     if not is_image and (duration or rule["duration_required"]):
+        if rule["duration_required"] and duration == 0:
+            raise ValueError("请填写视频时长（秒）")
         if (
             type(duration) is not int
             or not rule["duration_min"] <= duration <= rule["duration_max"]

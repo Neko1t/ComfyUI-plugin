@@ -48,7 +48,11 @@ class Generation(io.ComfyNode):
             io.String.Input("quality", default="1K" if cls.KIND == "image" else "720p"),
             io.String.Input("ratio", default="1:1" if cls.KIND == "image" else "16:9"),
             io.Int.Input(
-                "duration", default=0, min=0, max=3600, tooltip="0 表示不提交时长；模型要求时需填写"
+                "duration",
+                default=6 if cls.KIND == "video" else 0,
+                min=0,
+                max=3600,
+                tooltip="视频模型必须填写时长（秒）；0 表示不提交，仅适用于明确允许省略时长的模型",
             ),
             io.Int.Input("history_capacity", default=3, min=1, max=100),
             io.String.Input("node_key", default=""),

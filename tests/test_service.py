@@ -162,6 +162,24 @@ def test_rules_bounds_and_basic_validation():
         payload(snapshot, reference_counts={})
 
 
+def test_video_duration_is_required_by_default_and_is_sent():
+    rule = model_rule("{}", "video-model")
+    snapshot = {
+        "model": "video-model",
+        "prompt": "p",
+        "quality": "720p",
+        "ratio": "16:9",
+        "duration": 0,
+        "kind": "video",
+        "rule": rule,
+    }
+    with pytest.raises(ValueError, match="请填写视频时长"):
+        payload(snapshot, reference_counts={})
+
+    snapshot["duration"] = 6
+    assert payload(snapshot, reference_counts={})["duration"] == 6
+
+
 def test_normalize_openai_prompt_shapes():
     assert (
         normalize_prompt({"messages": [{"role": "user", "content": "draw a cat"}]}) == "draw a cat"

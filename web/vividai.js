@@ -7,7 +7,7 @@ const DEFAULT_RULE = {
   max_images: 9, max_videos: 3, max_audios: 3,
   min_images: 0, min_videos: 0, min_audios: 0,
   qualities: ["720p", "1080p", "1K", "2K"], ratios: ["16:9", "9:16", "1:1"],
-  duration_required: false, duration_min: 1, duration_max: 30, durations: [],
+  duration_required: true, duration_min: 1, duration_max: 30, durations: [],
 };
 let loadingWorkflow = false;
 let profiles = [];
