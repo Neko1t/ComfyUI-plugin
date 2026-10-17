@@ -1,6 +1,7 @@
 import asyncio
 import sys
 import uuid
+from types import SimpleNamespace
 
 from aiohttp import ClientSession, web
 
@@ -12,6 +13,28 @@ def test_register_skips_when_comfy_server_is_not_loaded(monkeypatch):
     monkeypatch.delitem(sys.modules, "server", raising=False)
 
     assert routes.register() is False
+
+
+def test_register_only_once_for_the_same_comfy_server(monkeypatch):
+    registered = []
+
+    class FakeRoutes:
+        def route(self, method, path):
+            def add(handler):
+                registered.append((method, path, handler))
+                return handler
+
+            return add
+
+    instance = SimpleNamespace(routes=FakeRoutes())
+    monkeypatch.setitem(
+        sys.modules, "server", SimpleNamespace(PromptServer=SimpleNamespace(instance=instance))
+    )
+    monkeypatch.setattr(routes, "_registered_server", None)
+
+    assert routes.register() is True
+    assert routes.register() is True
+    assert len(registered) == 7
 
 
 def test_local_routes_redact_secrets_origin_guard_and_media_range(tmp_path, monkeypatch):

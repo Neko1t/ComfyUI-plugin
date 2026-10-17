@@ -2,6 +2,7 @@
 
 import asyncio
 import gc
+import importlib.util
 import os
 import sys
 import uuid
@@ -19,6 +20,33 @@ from vividai.media import native_output  # noqa: E402
 from vividai.nodes import VividAIExtension, VividAIReferenceVideo, VividAITextToImage  # noqa: E402
 from vividai.service import Service  # noqa: E402
 from vividai.storage import Store  # noqa: E402
+
+
+def test_legacy_mapping_exposes_the_v3_nodes():
+    root = Path(__file__).resolve().parents[1]
+    # ComfyUI's load_custom_node uses the absolute directory as its module name.
+    module_name = str(root).replace(".", "_x_")
+    spec = importlib.util.spec_from_file_location(
+        module_name, root / "__init__.py", submodule_search_locations=[str(root)]
+    )
+    module = importlib.util.module_from_spec(spec)
+    sys.modules[spec.name] = module
+    try:
+        spec.loader.exec_module(module)
+        assert set(module.NODE_CLASS_MAPPINGS) == {
+            "VividAIConfig",
+            "VividAITextToImage",
+            "VividAITextToVideo",
+            "VividAIReferenceVideo",
+        }
+        for node_id, node_class in module.NODE_CLASS_MAPPINGS.items():
+            info = node_class.GET_NODE_INFO_V1()
+            assert info["name"] == node_id
+            assert info["display_name"] == module.NODE_DISPLAY_NAME_MAPPINGS[node_id]
+            assert node_class.INPUT_TYPES()["required"]
+            assert callable(getattr(node_class, node_class.FUNCTION))
+    finally:
+        sys.modules.pop(spec.name, None)
 
 
 def test_official_schemas_and_lazy_boundaries(tmp_path, monkeypatch):

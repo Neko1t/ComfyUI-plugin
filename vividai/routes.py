@@ -12,6 +12,8 @@ from aiohttp import web
 from . import runtime
 from .client import Client, ProviderError
 
+_registered_server = None
+
 
 def _loopback(host):
     if host == "localhost":
@@ -115,6 +117,8 @@ async def media(request):
 
 
 def register():
+    global _registered_server
+
     # Registry and other discovery tools may load the extension without a
     # running ComfyUI server. Importing server in that context initializes
     # the full runtime (including the GPU backend) and prevents node schema
@@ -128,7 +132,11 @@ def register():
     if PromptServer is None or getattr(PromptServer, "instance", None) is None:
         return False
 
-    routes = PromptServer.instance.routes
+    server_instance = PromptServer.instance
+    if _registered_server is server_instance:
+        return True
+
+    routes = server_instance.routes
     for method, path, handler in (
         ("GET", "/vividai/profiles", profiles),
         ("POST", "/vividai/profiles", save_profile),
@@ -139,4 +147,5 @@ def register():
         ("GET", "/vividai/nodes/{key}/media/{mid}", media),
     ):
         routes.route(method, path)(handler)
+    _registered_server = server_instance
     return True
