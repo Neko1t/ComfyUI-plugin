@@ -31,3 +31,6 @@ Context7's VividAI index is stale. A real browser read of https://vividai.run/do
 - Workspace initially contains only docs/comfyui-vividai-development.md and is not a Git repository.
 - Windows / PowerShell; Git author is configured globally.
 - uv was not initially on PATH. Python, Git, Node.js and agent-browser are available.
+- Installed uv 0.13.1 through its documented PyPI distribution. Created .venv with uv and CPython 3.13.5; system-site-packages permits the existing host torch installation for integration checks. Project dependencies are separately locked in uv.lock; ordinary installations do not require this development-only sharing option.
+- GitHub REST latest-release lookup returned HTTP 403 (rate limit). Git's remote tags work: highest stable tag is v0.41.3, commit 8713616fcc321624e306bbd36be5906203dcb0dc. Checked out that exact tag in ignored .comfyui-dev; comfyui_version.py confirms 0.41.3; frontend pinned to 1.55.17.
+- Verified official source: InputImpl.VideoFromFile wraps native VIDEO; VideoInput.save_to supports encoding references; V3 fingerprint_inputs and check_lazy_status are classmethods. HTTPX supports streaming lines/bytes and MockTransport without extra retry middleware.

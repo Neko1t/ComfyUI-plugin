@@ -7,8 +7,8 @@ Implement the approved specification in docs/specification.md with a uv environm
 ## Tasks
 
 1. [complete] Persist approved specification, research corrections, plan and initialize Git.
-2. [in_progress] Install/configure uv, create .venv, lock dependencies and bootstrap MIT package.
-3. [pending] Verify the latest stable ComfyUI API and current VividAI protocol; record baseline and integration design.
+2. [complete] Install/configure uv, create .venv, lock dependencies and bootstrap MIT package.
+3. [in_progress] Verify the latest stable ComfyUI API and current VividAI protocol; record baseline and integration design.
 4. [pending] Implement credentials, persistent node records and bounded recent-material queue; verify and commit.
 5. [pending] Implement VividAI upload/stream/reconnect/download client; verify against a mock HTTP service and commit.
 6. [pending] Implement four V3 nodes, native media conversion and lazy execution; verify and commit.
