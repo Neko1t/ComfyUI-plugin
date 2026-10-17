@@ -1,0 +1,22 @@
+.vividai-panel { box-sizing: border-box; padding: 8px; color: var(--input-text, #ddd); background: var(--comfy-menu-bg, #222); font: 12px/1.45 sans-serif; overflow: auto; height: 100%; }
+.vividai-panel * { box-sizing: border-box; }
+.vividai-status { margin: 0 0 8px; white-space: pre-wrap; }
+.vividai-status[data-error="true"] { color: #ffb3b3; }
+.vividai-actions { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 8px; }
+.vividai-panel button, .vividai-dialog button { color: inherit; background: var(--comfy-input-bg, #3a3a3a); border: 1px solid #666; border-radius: 4px; padding: 5px 8px; cursor: pointer; }
+.vividai-panel button:disabled { opacity: .6; cursor: wait; }
+.vividai-panel summary { cursor: pointer; padding: 4px 0; }
+.vividai-field { display: flex; align-items: center; gap: 8px; justify-content: space-between; margin: 5px 0; }
+.vividai-field input { width: 45%; min-width: 0; }
+.vividai-field input[type="checkbox"] { width: auto; }
+.vividai-field select { width: 65%; min-width: 0; color: inherit; background: var(--comfy-input-bg, #333); border: 1px solid #666; border-radius: 3px; padding: 4px; }
+.vividai-panel input, .vividai-dialog input { color: var(--input-text, #ddd); background: var(--comfy-input-bg, #333); border: 1px solid #666; border-radius: 3px; padding: 4px; }
+.vividai-history { display: grid; grid-template-columns: 1fr; gap: 8px; margin-top: 10px; }
+.vividai-material { border: 1px solid #555; border-radius: 5px; padding: 6px; display: grid; gap: 4px; }
+.vividai-material img, .vividai-material video { width: 100%; max-height: 180px; object-fit: contain; background: #111; }
+.vividai-material pre { white-space: pre-wrap; overflow-wrap: anywhere; font-size: 11px; }
+.vividai-dialog { color: var(--input-text, #ddd); background: var(--comfy-menu-bg, #222); border: 1px solid #666; border-radius: 8px; width: min(500px, 90vw); }
+.vividai-dialog::backdrop { background: #0009; }
+.vividai-dialog label { display: block; margin: 12px 0; }
+.vividai-dialog input:not([type="checkbox"]) { display: block; width: 100%; margin-top: 5px; }
+.vividai-dialog button { margin: 4px; }
