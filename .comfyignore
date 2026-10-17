@@ -1,0 +1,9 @@
+# Development files are tracked in Git but are not needed by installed nodes.
+uv.lock
+tests/
+tools/
+.github/
+.python-version
+task_plan.md
+findings.md
+progress.md
