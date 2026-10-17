@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import ipaddress
+import sys
 from functools import wraps
 from urllib.parse import urlsplit
 
@@ -114,7 +115,18 @@ async def media(request):
 
 
 def register():
-    from server import PromptServer
+    # Registry and other discovery tools may load the extension without a
+    # running ComfyUI server. Importing server in that context initializes
+    # the full runtime (including the GPU backend) and prevents node schema
+    # discovery. ComfyUI has already imported server before loading custom
+    # nodes, so only register routes when that module is ready.
+    server_module = sys.modules.get("server")
+    if server_module is None:
+        return False
+
+    PromptServer = getattr(server_module, "PromptServer", None)
+    if PromptServer is None or getattr(PromptServer, "instance", None) is None:
+        return False
 
     routes = PromptServer.instance.routes
     for method, path, handler in (
@@ -127,3 +139,4 @@ def register():
         ("GET", "/vividai/nodes/{key}/media/{mid}", media),
     ):
         routes.route(method, path)(handler)
+    return True

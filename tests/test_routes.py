@@ -1,10 +1,17 @@
 import asyncio
+import sys
 import uuid
 
 from aiohttp import ClientSession, web
 
 from vividai import routes, runtime
 from vividai.storage import Store
+
+
+def test_register_skips_when_comfy_server_is_not_loaded(monkeypatch):
+    monkeypatch.delitem(sys.modules, "server", raising=False)
+
+    assert routes.register() is False
 
 
 def test_local_routes_redact_secrets_origin_guard_and_media_range(tmp_path, monkeypatch):
