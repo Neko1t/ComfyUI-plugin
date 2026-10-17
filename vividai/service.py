@@ -96,8 +96,11 @@ class Service:
                     raise ValueError("所选模型当前不可用，请刷新模型列表；已有素材仍可复用")
                 intent = self.intent(token)
                 task = self.store.begin(key, intent, snapshot, config, snapshot["kind"])
+                task = self.store.update_task(key, intent, base=profile["base"])
             intent = task["intent"]
             profile = self.store.profile(config)
+            if task.get("base", profile["base"]) != profile["base"]:
+                raise ProviderError("原任务的 API 地址已被修改；请恢复原连接地址后重连")
             path = None
             try:
                 async with self.client_factory(profile) as client:

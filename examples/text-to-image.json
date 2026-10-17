@@ -1,0 +1,273 @@
+{
+  "config": {},
+  "extra": {
+    "ds": {
+      "scale": 0.75,
+      "offset": [
+        30,
+        70
+      ]
+    }
+  },
+  "groups": [],
+  "id": "631fcd94-bb98-4e28-b3d7-2f737d347369",
+  "last_link_id": 2,
+  "last_node_id": 3,
+  "links": [
+    [
+      1,
+      1,
+      0,
+      2,
+      0,
+      "VIVIDAI_CONFIG"
+    ],
+    [
+      2,
+      2,
+      0,
+      3,
+      0,
+      "IMAGE"
+    ]
+  ],
+  "nodes": [
+    {
+      "flags": {},
+      "id": 1,
+      "inputs": [
+        {
+          "link": null,
+          "localized_name": "config_ref",
+          "name": "config_ref",
+          "type": "STRING",
+          "widget": {
+            "name": "config_ref"
+          }
+        }
+      ],
+      "mode": 0,
+      "order": 0,
+      "outputs": [
+        {
+          "links": [
+            1
+          ],
+          "localized_name": "配置",
+          "name": "配置",
+          "type": "VIVIDAI_CONFIG"
+        }
+      ],
+      "pos": [
+        20,
+        100
+      ],
+      "properties": {
+        "Node name for S&R": "VividAIConfig"
+      },
+      "size": [
+        270,
+        136
+      ],
+      "type": "VividAIConfig",
+      "widgets_values": [
+        "",
+        null,
+        null
+      ],
+      "widgets_values_named": {
+        "config_ref": "",
+        "刷新本机配置列表": null,
+        "管理本机 API 配置": null
+      }
+    },
+    {
+      "flags": {},
+      "id": 2,
+      "inputs": [
+        {
+          "link": 1,
+          "localized_name": "config",
+          "name": "config",
+          "type": "VIVIDAI_CONFIG"
+        },
+        {
+          "link": null,
+          "localized_name": "model",
+          "name": "model",
+          "type": "STRING",
+          "widget": {
+            "name": "model"
+          }
+        },
+        {
+          "link": null,
+          "localized_name": "prompt",
+          "name": "prompt",
+          "type": "STRING",
+          "widget": {
+            "name": "prompt"
+          }
+        },
+        {
+          "link": null,
+          "localized_name": "quality",
+          "name": "quality",
+          "type": "STRING",
+          "widget": {
+            "name": "quality"
+          }
+        },
+        {
+          "link": null,
+          "localized_name": "ratio",
+          "name": "ratio",
+          "type": "STRING",
+          "widget": {
+            "name": "ratio"
+          }
+        },
+        {
+          "link": null,
+          "localized_name": "duration",
+          "name": "duration",
+          "type": "INT",
+          "widget": {
+            "name": "duration"
+          }
+        },
+        {
+          "link": null,
+          "localized_name": "history_capacity",
+          "name": "history_capacity",
+          "type": "INT",
+          "widget": {
+            "name": "history_capacity"
+          }
+        },
+        {
+          "link": null,
+          "localized_name": "node_key",
+          "name": "node_key",
+          "type": "STRING",
+          "widget": {
+            "name": "node_key"
+          }
+        },
+        {
+          "link": null,
+          "localized_name": "generation_token",
+          "name": "generation_token",
+          "type": "STRING",
+          "widget": {
+            "name": "generation_token"
+          }
+        },
+        {
+          "link": null,
+          "localized_name": "model_rules",
+          "name": "model_rules",
+          "type": "STRING",
+          "widget": {
+            "name": "model_rules"
+          }
+        }
+      ],
+      "mode": 0,
+      "order": 1,
+      "outputs": [
+        {
+          "links": [
+            2
+          ],
+          "localized_name": "图像",
+          "name": "IMAGE",
+          "type": "IMAGE"
+        }
+      ],
+      "pos": [
+        360,
+        100
+      ],
+      "properties": {
+        "Node name for S&R": "VividAITextToImage"
+      },
+      "size": [
+        400,
+        640
+      ],
+      "type": "VividAITextToImage",
+      "widgets_values": [
+        "",
+        "A quiet forest at sunrise, soft light",
+        "1K",
+        "1:1",
+        0,
+        3,
+        "4ad284a0-46ba-494b-bb57-c78d3b674b2f",
+        "",
+        "{}"
+      ],
+      "widgets_values_named": {
+        "duration": 0,
+        "generation_token": "",
+        "history_capacity": 3,
+        "model": "",
+        "model_rules": "{}",
+        "node_key": "4ad284a0-46ba-494b-bb57-c78d3b674b2f",
+        "prompt": "A quiet forest at sunrise, soft light",
+        "quality": "1K",
+        "ratio": "1:1"
+      }
+    },
+    {
+      "flags": {},
+      "id": 3,
+      "inputs": [
+        {
+          "link": 2,
+          "localized_name": "图片",
+          "name": "images",
+          "type": "IMAGE"
+        },
+        {
+          "link": null,
+          "localized_name": "文件名前缀",
+          "name": "filename_prefix",
+          "type": "STRING",
+          "widget": {
+            "name": "filename_prefix"
+          }
+        }
+      ],
+      "mode": 0,
+      "order": 2,
+      "outputs": [
+        {
+          "links": null,
+          "localized_name": "images",
+          "name": "images",
+          "type": "IMAGE"
+        }
+      ],
+      "pos": [
+        860,
+        100
+      ],
+      "properties": {},
+      "size": [
+        270,
+        58
+      ],
+      "type": "SaveImage",
+      "widgets_values": [
+        "ComfyUI"
+      ],
+      "widgets_values_named": {
+        "filename_prefix": "ComfyUI"
+      }
+    }
+  ],
+  "revision": 0,
+  "version": 0.4
+}

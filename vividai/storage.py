@@ -63,6 +63,22 @@ class Store:
                 PRAGMA user_version=1;
             """)
         os.chmod(self.db_path, 0o600)
+        # A process may have died after downloading but before committing a material.
+        # Only this single-instance store owns the cache; unknown names/symlinks are untouched.
+        with self._db() as db:
+            live = {
+                item["file"]
+                for row in db.execute("SELECT body FROM nodes")
+                for item in json.loads(row[0])["history"]
+            }
+            for path in self.cache.iterdir():
+                if path.name in live:
+                    continue
+                try:
+                    self.cache_path(path.name)
+                except ValueError:
+                    continue
+                db.execute("INSERT OR IGNORE INTO garbage VALUES (?)", (path.name,))
         self.collect()
 
     @contextmanager

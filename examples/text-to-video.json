@@ -1,0 +1,307 @@
+{
+  "config": {},
+  "extra": {
+    "ds": {
+      "scale": 0.75,
+      "offset": [
+        30,
+        70
+      ]
+    }
+  },
+  "groups": [],
+  "id": "500c3c21-68db-41bb-89cc-3aad3ee0f59f",
+  "last_link_id": 2,
+  "last_node_id": 3,
+  "links": [
+    [
+      1,
+      1,
+      0,
+      2,
+      0,
+      "VIVIDAI_CONFIG"
+    ],
+    [
+      2,
+      2,
+      0,
+      3,
+      0,
+      "VIDEO"
+    ]
+  ],
+  "nodes": [
+    {
+      "flags": {},
+      "id": 1,
+      "inputs": [
+        {
+          "link": null,
+          "localized_name": "config_ref",
+          "name": "config_ref",
+          "type": "STRING",
+          "widget": {
+            "name": "config_ref"
+          }
+        }
+      ],
+      "mode": 0,
+      "order": 0,
+      "outputs": [
+        {
+          "links": [
+            1
+          ],
+          "localized_name": "配置",
+          "name": "配置",
+          "type": "VIVIDAI_CONFIG"
+        }
+      ],
+      "pos": [
+        20,
+        100
+      ],
+      "properties": {
+        "Node name for S&R": "VividAIConfig"
+      },
+      "size": [
+        270,
+        136
+      ],
+      "type": "VividAIConfig",
+      "widgets_values": [
+        "",
+        null,
+        null
+      ],
+      "widgets_values_named": {
+        "config_ref": "",
+        "刷新本机配置列表": null,
+        "管理本机 API 配置": null
+      }
+    },
+    {
+      "flags": {},
+      "id": 2,
+      "inputs": [
+        {
+          "link": 1,
+          "localized_name": "config",
+          "name": "config",
+          "type": "VIVIDAI_CONFIG"
+        },
+        {
+          "link": null,
+          "localized_name": "model",
+          "name": "model",
+          "type": "STRING",
+          "widget": {
+            "name": "model"
+          }
+        },
+        {
+          "link": null,
+          "localized_name": "prompt",
+          "name": "prompt",
+          "type": "STRING",
+          "widget": {
+            "name": "prompt"
+          }
+        },
+        {
+          "link": null,
+          "localized_name": "quality",
+          "name": "quality",
+          "type": "STRING",
+          "widget": {
+            "name": "quality"
+          }
+        },
+        {
+          "link": null,
+          "localized_name": "ratio",
+          "name": "ratio",
+          "type": "STRING",
+          "widget": {
+            "name": "ratio"
+          }
+        },
+        {
+          "link": null,
+          "localized_name": "duration",
+          "name": "duration",
+          "type": "INT",
+          "widget": {
+            "name": "duration"
+          }
+        },
+        {
+          "link": null,
+          "localized_name": "history_capacity",
+          "name": "history_capacity",
+          "type": "INT",
+          "widget": {
+            "name": "history_capacity"
+          }
+        },
+        {
+          "link": null,
+          "localized_name": "node_key",
+          "name": "node_key",
+          "type": "STRING",
+          "widget": {
+            "name": "node_key"
+          }
+        },
+        {
+          "link": null,
+          "localized_name": "generation_token",
+          "name": "generation_token",
+          "type": "STRING",
+          "widget": {
+            "name": "generation_token"
+          }
+        },
+        {
+          "link": null,
+          "localized_name": "model_rules",
+          "name": "model_rules",
+          "type": "STRING",
+          "widget": {
+            "name": "model_rules"
+          }
+        }
+      ],
+      "mode": 0,
+      "order": 1,
+      "outputs": [
+        {
+          "links": [
+            2
+          ],
+          "localized_name": "视频",
+          "name": "VIDEO",
+          "type": "VIDEO"
+        }
+      ],
+      "pos": [
+        360,
+        100
+      ],
+      "properties": {
+        "Node name for S&R": "VividAITextToVideo"
+      },
+      "size": [
+        400,
+        640
+      ],
+      "type": "VividAITextToVideo",
+      "widgets_values": [
+        "",
+        "A quiet forest at sunrise, soft light",
+        "720p",
+        "16:9",
+        0,
+        3,
+        "ababdaef-3d12-4f39-b2c1-23a25f8277c2",
+        "",
+        "{}"
+      ],
+      "widgets_values_named": {
+        "duration": 0,
+        "generation_token": "",
+        "history_capacity": 3,
+        "model": "",
+        "model_rules": "{}",
+        "node_key": "ababdaef-3d12-4f39-b2c1-23a25f8277c2",
+        "prompt": "A quiet forest at sunrise, soft light",
+        "quality": "720p",
+        "ratio": "16:9"
+      }
+    },
+    {
+      "flags": {},
+      "id": 3,
+      "inputs": [
+        {
+          "link": 2,
+          "localized_name": "视频",
+          "name": "video",
+          "type": "VIDEO"
+        },
+        {
+          "link": null,
+          "localized_name": "文件名前缀",
+          "name": "filename_prefix",
+          "type": "STRING",
+          "widget": {
+            "name": "filename_prefix"
+          }
+        },
+        {
+          "link": null,
+          "localized_name": "编解码器",
+          "name": "format.codec",
+          "type": "COMFY_DYNAMICCOMBO_V3",
+          "widget": {
+            "name": "format.codec"
+          }
+        },
+        {
+          "link": null,
+          "localized_name": "格式",
+          "name": "format",
+          "type": "COMFY_DYNAMICCOMBO_V3",
+          "widget": {
+            "name": "format"
+          }
+        },
+        {
+          "link": null,
+          "localized_name": "编码器",
+          "name": "codec",
+          "shape": 7,
+          "type": "COMFY_DYNAMICCOMBO_V3",
+          "widget": {
+            "name": "codec"
+          }
+        }
+      ],
+      "mode": 0,
+      "order": 2,
+      "outputs": [
+        {
+          "links": null,
+          "localized_name": "video",
+          "name": "video",
+          "type": "VIDEO"
+        }
+      ],
+      "pos": [
+        860,
+        100
+      ],
+      "properties": {},
+      "size": [
+        270,
+        106
+      ],
+      "type": "SaveVideo",
+      "widgets_values": [
+        "video/ComfyUI",
+        "auto",
+        "auto",
+        "auto"
+      ],
+      "widgets_values_named": {
+        "codec": "auto",
+        "filename_prefix": "video/ComfyUI",
+        "format": "auto",
+        "format.codec": "auto"
+      }
+    }
+  ],
+  "revision": 0,
+  "version": 0.4
+}

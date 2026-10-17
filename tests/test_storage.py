@@ -62,3 +62,14 @@ def test_failed_job_preserves_history_and_manual_activation(tmp_path):
 def test_cache_cannot_escape(tmp_path, name):
     with pytest.raises(ValueError):
         Store(tmp_path).cache_path(name)
+
+
+def test_restart_removes_only_owned_orphans(tmp_path):
+    store = Store(tmp_path)
+    orphan = store.new_path(".part")
+    orphan.write_bytes(b"interrupted download")
+    unowned = store.cache / "user-file.png"
+    unowned.write_bytes(b"keep")
+    Store(tmp_path)
+    assert not orphan.exists()
+    assert unowned.exists()

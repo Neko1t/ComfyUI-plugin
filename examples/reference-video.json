@@ -1,0 +1,513 @@
+{
+  "config": {},
+  "extra": {
+    "ds": {
+      "scale": 0.75,
+      "offset": [
+        30,
+        70
+      ]
+    }
+  },
+  "groups": [],
+  "id": "3073696c-002d-4ef3-9909-fd7befb1bf8d",
+  "last_link_id": 3,
+  "last_node_id": 4,
+  "links": [
+    [
+      1,
+      1,
+      0,
+      2,
+      0,
+      "VIVIDAI_CONFIG"
+    ],
+    [
+      2,
+      2,
+      0,
+      3,
+      0,
+      "VIDEO"
+    ],
+    [
+      3,
+      4,
+      0,
+      2,
+      1,
+      "IMAGE"
+    ]
+  ],
+  "nodes": [
+    {
+      "flags": {},
+      "id": 1,
+      "inputs": [
+        {
+          "link": null,
+          "localized_name": "config_ref",
+          "name": "config_ref",
+          "type": "STRING",
+          "widget": {
+            "name": "config_ref"
+          }
+        }
+      ],
+      "mode": 0,
+      "order": 0,
+      "outputs": [
+        {
+          "links": [
+            1
+          ],
+          "localized_name": "配置",
+          "name": "配置",
+          "type": "VIVIDAI_CONFIG"
+        }
+      ],
+      "pos": [
+        20,
+        100
+      ],
+      "properties": {
+        "Node name for S&R": "VividAIConfig"
+      },
+      "size": [
+        270,
+        136
+      ],
+      "type": "VividAIConfig",
+      "widgets_values": [
+        "",
+        null,
+        null
+      ],
+      "widgets_values_named": {
+        "config_ref": "",
+        "刷新本机配置列表": null,
+        "管理本机 API 配置": null
+      }
+    },
+    {
+      "flags": {},
+      "id": 2,
+      "inputs": [
+        {
+          "link": 1,
+          "localized_name": "config",
+          "name": "config",
+          "type": "VIVIDAI_CONFIG"
+        },
+        {
+          "label": "image_1",
+          "link": 3,
+          "localized_name": "image_1",
+          "name": "image_1",
+          "shape": 7,
+          "type": "IMAGE"
+        },
+        {
+          "label": "image_2",
+          "link": null,
+          "localized_name": "image_2",
+          "name": "image_2",
+          "shape": 7,
+          "type": "IMAGE"
+        },
+        {
+          "label": "image_3",
+          "link": null,
+          "localized_name": "image_3",
+          "name": "image_3",
+          "shape": 7,
+          "type": "IMAGE"
+        },
+        {
+          "label": "image_4",
+          "link": null,
+          "localized_name": "image_4",
+          "name": "image_4",
+          "shape": 7,
+          "type": "IMAGE"
+        },
+        {
+          "label": "image_5",
+          "link": null,
+          "localized_name": "image_5",
+          "name": "image_5",
+          "shape": 7,
+          "type": "IMAGE"
+        },
+        {
+          "label": "image_6",
+          "link": null,
+          "localized_name": "image_6",
+          "name": "image_6",
+          "shape": 7,
+          "type": "IMAGE"
+        },
+        {
+          "label": "image_7",
+          "link": null,
+          "localized_name": "image_7",
+          "name": "image_7",
+          "shape": 7,
+          "type": "IMAGE"
+        },
+        {
+          "label": "image_8",
+          "link": null,
+          "localized_name": "image_8",
+          "name": "image_8",
+          "shape": 7,
+          "type": "IMAGE"
+        },
+        {
+          "label": "image_9",
+          "link": null,
+          "localized_name": "image_9",
+          "name": "image_9",
+          "shape": 7,
+          "type": "IMAGE"
+        },
+        {
+          "label": "video_1",
+          "link": null,
+          "localized_name": "video_1",
+          "name": "video_1",
+          "shape": 7,
+          "type": "VIDEO"
+        },
+        {
+          "label": "video_2",
+          "link": null,
+          "localized_name": "video_2",
+          "name": "video_2",
+          "shape": 7,
+          "type": "VIDEO"
+        },
+        {
+          "label": "video_3",
+          "link": null,
+          "localized_name": "video_3",
+          "name": "video_3",
+          "shape": 7,
+          "type": "VIDEO"
+        },
+        {
+          "label": "audio_1",
+          "link": null,
+          "localized_name": "audio_1",
+          "name": "audio_1",
+          "shape": 7,
+          "type": "AUDIO"
+        },
+        {
+          "label": "audio_2",
+          "link": null,
+          "localized_name": "audio_2",
+          "name": "audio_2",
+          "shape": 7,
+          "type": "AUDIO"
+        },
+        {
+          "label": "audio_3",
+          "link": null,
+          "localized_name": "audio_3",
+          "name": "audio_3",
+          "shape": 7,
+          "type": "AUDIO"
+        },
+        {
+          "link": null,
+          "localized_name": "model",
+          "name": "model",
+          "type": "STRING",
+          "widget": {
+            "name": "model"
+          }
+        },
+        {
+          "link": null,
+          "localized_name": "prompt",
+          "name": "prompt",
+          "type": "STRING",
+          "widget": {
+            "name": "prompt"
+          }
+        },
+        {
+          "link": null,
+          "localized_name": "quality",
+          "name": "quality",
+          "type": "STRING",
+          "widget": {
+            "name": "quality"
+          }
+        },
+        {
+          "link": null,
+          "localized_name": "ratio",
+          "name": "ratio",
+          "type": "STRING",
+          "widget": {
+            "name": "ratio"
+          }
+        },
+        {
+          "link": null,
+          "localized_name": "duration",
+          "name": "duration",
+          "type": "INT",
+          "widget": {
+            "name": "duration"
+          }
+        },
+        {
+          "link": null,
+          "localized_name": "history_capacity",
+          "name": "history_capacity",
+          "type": "INT",
+          "widget": {
+            "name": "history_capacity"
+          }
+        },
+        {
+          "link": null,
+          "localized_name": "node_key",
+          "name": "node_key",
+          "type": "STRING",
+          "widget": {
+            "name": "node_key"
+          }
+        },
+        {
+          "link": null,
+          "localized_name": "generation_token",
+          "name": "generation_token",
+          "type": "STRING",
+          "widget": {
+            "name": "generation_token"
+          }
+        },
+        {
+          "link": null,
+          "localized_name": "model_rules",
+          "name": "model_rules",
+          "type": "STRING",
+          "widget": {
+            "name": "model_rules"
+          }
+        }
+      ],
+      "mode": 0,
+      "order": 2,
+      "outputs": [
+        {
+          "links": [
+            2
+          ],
+          "localized_name": "视频",
+          "name": "VIDEO",
+          "type": "VIDEO"
+        }
+      ],
+      "pos": [
+        360,
+        100
+      ],
+      "properties": {
+        "Node name for S&R": "VividAIReferenceVideo"
+      },
+      "size": [
+        400,
+        640
+      ],
+      "type": "VividAIReferenceVideo",
+      "widgets_values": [
+        "",
+        "A quiet forest at sunrise, soft light",
+        "720p",
+        "16:9",
+        0,
+        3,
+        "29d2aaa8-7384-4108-bd86-b8b6093d58e8",
+        "",
+        "{}"
+      ],
+      "widgets_values_named": {
+        "duration": 0,
+        "generation_token": "",
+        "history_capacity": 3,
+        "model": "",
+        "model_rules": "{}",
+        "node_key": "29d2aaa8-7384-4108-bd86-b8b6093d58e8",
+        "prompt": "A quiet forest at sunrise, soft light",
+        "quality": "720p",
+        "ratio": "16:9"
+      }
+    },
+    {
+      "flags": {},
+      "id": 3,
+      "inputs": [
+        {
+          "link": 2,
+          "localized_name": "视频",
+          "name": "video",
+          "type": "VIDEO"
+        },
+        {
+          "link": null,
+          "localized_name": "文件名前缀",
+          "name": "filename_prefix",
+          "type": "STRING",
+          "widget": {
+            "name": "filename_prefix"
+          }
+        },
+        {
+          "link": null,
+          "localized_name": "编解码器",
+          "name": "format.codec",
+          "type": "COMFY_DYNAMICCOMBO_V3",
+          "widget": {
+            "name": "format.codec"
+          }
+        },
+        {
+          "link": null,
+          "localized_name": "格式",
+          "name": "format",
+          "type": "COMFY_DYNAMICCOMBO_V3",
+          "widget": {
+            "name": "format"
+          }
+        },
+        {
+          "link": null,
+          "localized_name": "编码器",
+          "name": "codec",
+          "shape": 7,
+          "type": "COMFY_DYNAMICCOMBO_V3",
+          "widget": {
+            "name": "codec"
+          }
+        }
+      ],
+      "mode": 0,
+      "order": 3,
+      "outputs": [
+        {
+          "links": null,
+          "localized_name": "video",
+          "name": "video",
+          "type": "VIDEO"
+        }
+      ],
+      "pos": [
+        860,
+        100
+      ],
+      "properties": {},
+      "size": [
+        270,
+        106
+      ],
+      "type": "SaveVideo",
+      "widgets_values": [
+        "video/ComfyUI",
+        "auto",
+        "auto",
+        "auto"
+      ],
+      "widgets_values_named": {
+        "codec": "auto",
+        "filename_prefix": "video/ComfyUI",
+        "format": "auto",
+        "format.codec": "auto"
+      }
+    },
+    {
+      "flags": {},
+      "id": 4,
+      "inputs": [
+        {
+          "link": null,
+          "localized_name": "宽度",
+          "name": "width",
+          "type": "INT",
+          "widget": {
+            "name": "width"
+          }
+        },
+        {
+          "link": null,
+          "localized_name": "高度",
+          "name": "height",
+          "type": "INT",
+          "widget": {
+            "name": "height"
+          }
+        },
+        {
+          "link": null,
+          "localized_name": "批量大小",
+          "name": "batch_size",
+          "type": "INT",
+          "widget": {
+            "name": "batch_size"
+          }
+        },
+        {
+          "link": null,
+          "localized_name": "颜色",
+          "name": "color",
+          "type": "INT",
+          "widget": {
+            "name": "color"
+          }
+        }
+      ],
+      "mode": 0,
+      "order": 1,
+      "outputs": [
+        {
+          "links": [
+            3
+          ],
+          "localized_name": "图像",
+          "name": "IMAGE",
+          "type": "IMAGE"
+        }
+      ],
+      "pos": [
+        20,
+        400
+      ],
+      "properties": {
+        "Node name for S&R": "EmptyImage"
+      },
+      "size": [
+        270,
+        130
+      ],
+      "type": "EmptyImage",
+      "widgets_values": [
+        512,
+        512,
+        1,
+        0
+      ],
+      "widgets_values_named": {
+        "batch_size": 1,
+        "color": 0,
+        "height": 512,
+        "width": 512
+      }
+    }
+  ],
+  "revision": 0,
+  "version": 0.4
+}
