@@ -1,26 +1,43 @@
-from importlib import import_module
+try:
+    from .vividai.nodes import (
+        VividAIConfig,
+        VividAIExtension,
+        VividAIReferenceVideo,
+        VividAITextToImage,
+        VividAITextToVideo,
+    )
+    from .vividai.routes import register
+except ImportError:
+    # Pytest and ComfyUI's file-based loader can execute this file without a
+    # package parent. Keep the same static class references in that mode.
+    from vividai.nodes import (
+        VividAIConfig,
+        VividAIExtension,
+        VividAIReferenceVideo,
+        VividAITextToImage,
+        VividAITextToVideo,
+    )
+    from vividai.routes import register
 
 WEB_DIRECTORY = "./web"
 
-_module_prefix = f"{__package__}." if __package__ else ""
-_nodes = import_module(f"{_module_prefix}vividai.nodes")
-_register_routes = import_module(f"{_module_prefix}vividai.routes").register
-
 NODE_CLASS_MAPPINGS = {
-    "VividAIConfig": _nodes.VividAIConfig,
-    "VividAITextToImage": _nodes.VividAITextToImage,
-    "VividAITextToVideo": _nodes.VividAITextToVideo,
-    "VividAIReferenceVideo": _nodes.VividAIReferenceVideo,
+    "VividAIConfig": VividAIConfig,
+    "VividAITextToImage": VividAITextToImage,
+    "VividAITextToVideo": VividAITextToVideo,
+    "VividAIReferenceVideo": VividAIReferenceVideo,
 }
 NODE_DISPLAY_NAME_MAPPINGS = {
-    node_id: node_class.define_schema().display_name
-    for node_id, node_class in NODE_CLASS_MAPPINGS.items()
+    "VividAIConfig": "VividAI 配置",
+    "VividAITextToImage": "VividAI 文生图",
+    "VividAITextToVideo": "VividAI 文生视频",
+    "VividAIReferenceVideo": "VividAI 参考素材生视频",
 }
 
 # ComfyUI loads NODE_CLASS_MAPPINGS before comfy_entrypoint, so V3 on_load
 # is skipped when both interfaces are exported.
-_register_routes()
+register()
 
 
 async def comfy_entrypoint():
-    return _nodes.VividAIExtension()
+    return VividAIExtension()
