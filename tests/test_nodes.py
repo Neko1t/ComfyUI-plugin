@@ -45,6 +45,10 @@ def test_legacy_mapping_exposes_the_v3_nodes():
             assert info["display_name"] == module.NODE_DISPLAY_NAME_MAPPINGS[node_id]
             assert node_class.INPUT_TYPES()["required"]
             assert callable(getattr(node_class, node_class.FUNCTION))
+        prompt_input = module.NODE_CLASS_MAPPINGS["VividAITextToImage"].INPUT_TYPES()["required"][
+            "prompt"
+        ]
+        assert "OPENAI_CONTENT" in prompt_input[0]
     finally:
         sys.modules.pop(spec.name, None)
 

@@ -6,7 +6,7 @@ import pytest
 from PIL import Image
 
 from vividai.client import AmbiguousSubmission, PendingJob, ProviderError, RemoteFailure
-from vividai.rules import DEFAULT_RULE, model_rule, payload, ports
+from vividai.rules import DEFAULT_RULE, model_rule, normalize_prompt, payload, ports
 from vividai.service import Service
 from vividai.storage import Store
 
@@ -128,6 +128,22 @@ def test_ambiguous_never_resubmits_and_failed_does_not_fallback(setup):
     assert len(FakeClient.submissions) == 3
 
 
+def test_first_generation_provider_failure_retries_without_regeneration_token(setup):
+    store, service, ref, snapshot, node = setup
+    FakeClient.failure = RemoteFailure("content policy")
+
+    async def run():
+        with pytest.raises(RemoteFailure):
+            await service.run(node, "", ref, snapshot, {}, 3)
+        assert store.selected(node) is None
+        FakeClient.failure = None
+        result = await service.run(node, "", ref, snapshot, {}, 3)
+        assert result["kind"] == "image"
+
+    asyncio.run(run())
+    assert len(FakeClient.submissions) == 2
+
+
 def test_rules_bounds_and_basic_validation():
     rule = model_rule('{"new":{"max_audios":0,"max_images":2}}', "new")
     assert ports(rule) == ["image_1", "image_2", "video_1", "video_2", "video_3"]
@@ -144,3 +160,18 @@ def test_rules_bounds_and_basic_validation():
     }
     with pytest.raises(ValueError, match="时长"):
         payload(snapshot, reference_counts={})
+
+
+def test_normalize_openai_prompt_shapes():
+    assert (
+        normalize_prompt({"messages": [{"role": "user", "content": "draw a cat"}]}) == "draw a cat"
+    )
+    assert (
+        normalize_prompt(
+            '{"input":[{"role":"system","content":[{"type":"input_text",'
+            '"text":"cinematic"}]},{"role":"user","content":"a cat"}]}'
+        )
+        == "system: cinematic\n\na cat"
+    )
+    with pytest.raises(ValueError, match="不能把 OpenAI 图像"):
+        normalize_prompt({"messages": [{"role": "user", "content": [{"type": "input_image"}]}]})

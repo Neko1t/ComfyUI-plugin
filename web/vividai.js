@@ -304,9 +304,17 @@ function installPanel(node) {
   actions.append(button("刷新历史 / 状态", async () => {
     try { await refreshHistory(node); } catch (error) { setStatus(node, error.message, true); }
   }));
-  const advanced = element("details");
-  advanced.append(element("summary", "当前模型能力配置（默认 933）"));
-  const ruleEditor = element("div"); advanced.append(ruleEditor);
+  const advanced = element("div", null, "vividai-advanced");
+  const ruleEditor = element("div", null, "vividai-advanced-content");
+  ruleEditor.hidden = true;
+  const advancedToggle = button("显示高级选项", () => {
+    ruleEditor.hidden = !ruleEditor.hidden;
+    advancedToggle.textContent = ruleEditor.hidden ? "显示高级选项" : "隐藏高级选项";
+    advancedToggle.setAttribute("aria-expanded", String(!ruleEditor.hidden));
+  });
+  advancedToggle.className = "vividai-advanced-toggle";
+  advancedToggle.setAttribute("aria-expanded", "false");
+  advanced.append(advancedToggle, ruleEditor);
   const history = element("div", null, "vividai-history");
   root.append(status, actions, advanced, history);
   node._vividai = { root, status, ruleEditor, history };

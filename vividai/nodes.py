@@ -4,9 +4,10 @@ from comfy_api.latest import ComfyExtension, io
 
 from . import runtime
 from .media import native_output
-from .rules import model_rule, ports
+from .rules import model_rule, normalize_prompt, ports
 
 CONFIG = io.Custom("VIVIDAI_CONFIG")
+OPENAI_CONTENT = io.Custom("OPENAI_CONTENT")
 
 
 class VividAIConfig(io.ComfyNode):
@@ -39,16 +40,20 @@ class Generation(io.ComfyNode):
         inputs = [
             CONFIG.Input("config", lazy=True),
             io.String.Input("model", default=""),
-            io.String.Input("prompt", default="", multiline=True),
+            io.MultiType.Input(
+                io.String.Input("prompt", default="", multiline=True),
+                types=[OPENAI_CONTENT],
+                tooltip="支持普通文本，也支持 OpenAI messages/input 内容对象",
+            ),
             io.String.Input("quality", default="1K" if cls.KIND == "image" else "720p"),
             io.String.Input("ratio", default="1:1" if cls.KIND == "image" else "16:9"),
             io.Int.Input(
                 "duration", default=0, min=0, max=3600, tooltip="0 表示不提交时长；模型要求时需填写"
             ),
             io.Int.Input("history_capacity", default=3, min=1, max=100),
-            io.String.Input("node_key", default="", advanced=True),
-            io.String.Input("generation_token", default="", advanced=True),
-            io.String.Input("model_rules", default="{}", advanced=True),
+            io.String.Input("node_key", default=""),
+            io.String.Input("generation_token", default=""),
+            io.String.Input("model_rules", default="{}"),
         ]
         if cls.REFERENCES:
             for kind, type_, bound in (
@@ -116,7 +121,7 @@ class Generation(io.ComfyNode):
         }
         snapshot = {
             "model": model,
-            "prompt": prompt,
+            "prompt": normalize_prompt(prompt),
             "quality": quality,
             "ratio": ratio,
             "duration": duration,

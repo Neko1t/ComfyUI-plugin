@@ -5,7 +5,8 @@
 .vividai-actions { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 8px; }
 .vividai-panel button, .vividai-dialog button { color: inherit; background: var(--comfy-input-bg, #3a3a3a); border: 1px solid #666; border-radius: 4px; padding: 5px 8px; cursor: pointer; }
 .vividai-panel button:disabled { opacity: .6; cursor: wait; }
-.vividai-panel summary { cursor: pointer; padding: 4px 0; }
+.vividai-advanced-toggle { width: 100%; text-align: left; }
+.vividai-advanced-content[hidden] { display: none; }
 .vividai-field { display: flex; align-items: center; gap: 8px; justify-content: space-between; margin: 5px 0; }
 .vividai-field input { width: 45%; min-width: 0; }
 .vividai-field input[type="checkbox"] { width: auto; }

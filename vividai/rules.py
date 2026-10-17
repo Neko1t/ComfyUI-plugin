@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+from collections.abc import Mapping
 
 DEFAULT_RULE = {
     "max_images": 9,
@@ -55,6 +56,78 @@ def model_rule(rules_json: str, model: str) -> dict:
         raise ValueError("模型能力配置无效，请检查展开配置项") from exc
 
 
+def _content_text(content) -> list[str]:
+    if isinstance(content, str):
+        return [content]
+    if not isinstance(content, list):
+        raise ValueError("OpenAI 内容必须是字符串或内容数组")
+    parts = []
+    for item in content:
+        if isinstance(item, str):
+            parts.append(item)
+            continue
+        if not isinstance(item, Mapping):
+            raise ValueError("OpenAI 内容片段格式无效")
+        kind = item.get("type")
+        if kind in {"text", "input_text", "output_text"} and isinstance(item.get("text"), str):
+            parts.append(item["text"])
+            continue
+        if kind in {"image_url", "input_image", "input_file", "file"}:
+            raise ValueError(
+                "当前文生图节点不能把 OpenAI 图像/文件内容当作提示词，请使用参考素材节点"
+            )
+        raise ValueError("OpenAI 内容片段必须包含可识别的文本")
+    return parts
+
+
+def _openai_text(value) -> list[str]:
+    if isinstance(value, str):
+        return [value]
+    if isinstance(value, Mapping):
+        if "messages" in value:
+            return _openai_text(value["messages"])
+        elif "input" in value:
+            return _openai_text(value["input"])
+        elif "content" in value:
+            return _content_text(value["content"])
+        elif "text" in value and isinstance(value["text"], str):
+            return [value["text"]]
+        else:
+            raise ValueError("OpenAI 输入必须包含 messages、input 或 content")
+    if isinstance(value, list):
+        parts = []
+        for item in value:
+            if isinstance(item, Mapping) and "content" in item:
+                message = _content_text(item["content"])
+                role = item.get("role")
+                if role and role != "user":
+                    parts.extend([f"{role}: {text}" for text in message])
+                else:
+                    parts.extend(message)
+            else:
+                parts.extend(_content_text(item))
+        return parts
+    raise ValueError("OpenAI 输入格式无效")
+
+
+def normalize_prompt(prompt) -> str:
+    """Accept plain text or JSON/OpenAI message content and return VividAI text."""
+    value = prompt
+    if isinstance(value, str):
+        value = value.strip()
+        if value[:1] in {"{", "["}:
+            try:
+                value = json.loads(value)
+            except json.JSONDecodeError:
+                # A normal prompt may begin with punctuation that resembles JSON.
+                return value
+    pieces = [piece.strip() for piece in _openai_text(value) if piece.strip()]
+    result = "\n\n".join(pieces)
+    if not result or len(result) > 5000:
+        raise ValueError("请填写提示词（1–5000 字符）")
+    return result
+
+
 def ports(rule: dict) -> list[str]:
     return [
         f"{kind}_{i}"
@@ -69,8 +142,10 @@ def ports(rule: dict) -> list[str]:
 
 def payload(snapshot: dict, *, reference_counts: dict) -> dict:
     rule = snapshot["rule"]
-    model, prompt, quality = (snapshot[x].strip() for x in ("model", "prompt", "quality"))
-    if not model or not prompt or len(prompt) > 5000 or not quality:
+    model = snapshot["model"].strip()
+    prompt = normalize_prompt(snapshot["prompt"])
+    quality = snapshot["quality"].strip()
+    if not model or not quality:
         raise ValueError("请填写模型、提示词（1–5000 字符）和清晰度")
     ratio, duration = snapshot["ratio"].strip(), snapshot["duration"]
     for field, value in (("qualities", quality), ("ratios", ratio)):

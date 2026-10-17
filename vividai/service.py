@@ -39,6 +39,11 @@ class Service:
                     "state": state,
                     "error": "上次运行在提交过程中中断，请核实后点击下次运行重新生成",
                 }
+            # A node without a successful material has no cached output to
+            # protect. Provider failures and pre-submit failures may retry on
+            # the next workflow run; ambiguous submissions remain blocked.
+            if not self.store.selected(key) and active["state"] == "failed":
+                return "new", None
             if intent != active["intent"] and not requested and token:
                 return "new", None
             return "error", active
@@ -95,6 +100,12 @@ class Service:
                 if snapshot["model"].strip() not in models:
                     raise ValueError("所选模型当前不可用，请刷新模型列表；已有素材仍可复用")
                 intent = self.intent(token)
+                # A failed first attempt must be retriable without changing the
+                # widget token.  Task intents are unique database keys, so a
+                # retry gets a fresh local intent while the visible token keeps
+                # its existing meaning (explicit regeneration request).
+                if self.store.task(key, intent) is not None:
+                    intent = str(uuid.uuid4())
                 task = self.store.begin(key, intent, snapshot, config, snapshot["kind"])
                 task = self.store.update_task(key, intent, base=profile["base"])
             intent = task["intent"]
