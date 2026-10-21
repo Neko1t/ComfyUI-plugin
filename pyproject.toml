@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "comfyui-vividai"
-version = "0.1.5"
+version = "0.1.6"
 description = "Persistent, explicit-generation VividAI nodes for ComfyUI"
 requires-python = ">=3.11"
 license = "MIT"
