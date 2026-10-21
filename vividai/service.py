@@ -7,7 +7,7 @@ import uuid
 
 from .client import AmbiguousSubmission, Client, PendingJob, ProviderError, RemoteFailure
 from .media import encode, validate_result
-from .rules import payload
+from .rules import payload, provider_rule, validate_provider_model
 
 
 class Service:
@@ -93,12 +93,20 @@ class Service:
                     f"{kind}s": sum(name.startswith(kind + "_") for name in references)
                     for kind in ("image", "video", "audio")
                 }
-                body = payload(snapshot, reference_counts=counts)
                 profile = self.store.profile(config)
                 async with self.client_factory(profile) as client:
                     models = await client.models()
-                if snapshot["model"].strip() not in models:
+                spec = next(
+                    (item for item in models if item["id"] == snapshot["model"].strip()), None
+                )
+                if spec is None:
                     raise ValueError("所选模型当前不可用，请刷新模型列表；已有素材仍可复用")
+                if snapshot["rule"].get("_source") in {"default", "provider"} and spec.get(
+                    "kind"
+                ):
+                    snapshot = snapshot | {"rule": provider_rule(spec)}
+                validate_provider_model(spec, snapshot, counts)
+                body = payload(snapshot, reference_counts=counts)
                 intent = self.intent(token)
                 # A failed first attempt must be retriable without changing the
                 # widget token.  Task intents are unique database keys, so a

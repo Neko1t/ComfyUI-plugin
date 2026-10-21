@@ -94,6 +94,34 @@ function currentRule(node) {
   catch { return { ...DEFAULT_RULE }; }
 }
 
+function providerRule(model) {
+  const rule = { ...DEFAULT_RULE, _source: "provider" };
+  if (Array.isArray(model.qualities)) rule.qualities = model.qualities;
+  for (const [field, name, bound] of [
+    ["refImages", "max_images", 9], ["refVideos", "max_videos", 3],
+    ["refAudios", "max_audios", 3],
+  ]) rule[name] = Math.min(bound, Math.max(0, Number(model[field] ?? 0)));
+  const duration = model.duration;
+  if (duration?.mode === "fixed") {
+    rule.duration_required = true;
+    rule.duration_min = rule.duration_max = duration.seconds;
+    rule.durations = [duration.seconds];
+    rule._duration_mode = "fixed";
+  } else if (duration?.mode === "range") {
+    rule.duration_required = true;
+    rule.duration_min = duration.min; rule.duration_max = duration.max;
+    rule.durations = [];
+    rule._duration_mode = "range";
+  } else if (duration?.mode === "options" && Array.isArray(duration.options) && duration.options.length) {
+    rule.duration_required = true;
+    rule.duration_min = Math.min(...duration.options);
+    rule.duration_max = Math.max(...duration.options);
+    rule.durations = duration.options;
+    rule._duration_mode = "options";
+  }
+  return rule;
+}
+
 function profileRef(node) {
   const input = node.inputs?.find((i) => i.name === "config");
   const link = input?.link != null ? app.graph?.links[input.link] : null;
@@ -108,6 +136,21 @@ function setStatus(node, message, error = false) {
 
 function syncRule(node) {
   const rule = currentRule(node);
+  if (rule._source === "provider" && rule.qualities?.length
+    && !rule.qualities.includes(value(node, "quality"))) {
+    setValue(node, "quality", rule.qualities[0]);
+  }
+  if (node.comfyClass !== "VividAITextToImage" && rule._source === "provider") {
+    const seconds = Number(value(node, "duration"));
+    if (rule._duration_mode === "fixed" && seconds !== rule.duration_min) {
+      setValue(node, "duration", rule.duration_min);
+    } else if (rule.duration_required && (seconds < rule.duration_min || seconds > rule.duration_max
+      || (rule.durations.length && !rule.durations.includes(seconds)))) {
+      const preferred = rule.durations.length ? rule.durations[0]
+        : Math.max(rule.duration_min, Math.min(6, rule.duration_max));
+      setValue(node, "duration", preferred);
+    }
+  }
   combo(widget(node, "model"), widget(node, "model")?.options.values || []);
   combo(widget(node, "quality"), rule.qualities || []);
   combo(widget(node, "ratio"), rule.ratios || []);
@@ -158,7 +201,7 @@ function buildRuleForm(node, rule) {
   form.append(button("保存此模型的能力配置", () => {
     const model = value(node, "model");
     if (!model) { setStatus(node, "请先选择模型", true); return; }
-    const next = { ...rule };
+    const next = { ...rule, _source: "user" };
     for (const [key, { input, type }] of controls) {
       if (!input.checkValidity()) { input.reportValidity(); return; }
       next[key] = type === "checkbox" ? input.checked : type === "number" ? Number(input.value)
@@ -237,10 +280,21 @@ async function refreshModels(node) {
   const ref = profileRef(node);
   if (!ref) throw new Error("请连接 VividAI 配置节点，并选择本机配置");
   const { models } = await request(`/models?config_ref=${encodeURIComponent(ref)}`);
-  combo(widget(node, "model"), models);
-  if (!value(node, "model") && models.length) setValue(node, "model", models[0]);
+  const kind = node.comfyClass === "VividAITextToImage" ? "image" : "video";
+  const compatible = models.filter((model) => model.kind === kind);
+  const configured = rules(node);
+  for (const model of compatible) {
+    if (!configured[model.id] || configured[model.id]._source === "provider") {
+      configured[model.id] = providerRule(model);
+    }
+  }
+  setValue(node, "model_rules", JSON.stringify(configured));
+  if (!compatible.some((model) => model.id === value(node, "model"))) {
+    setValue(node, "model", compatible[0]?.id || "");
+  }
+  combo(widget(node, "model"), compatible.map((model) => model.id));
   syncRule(node);
-  setStatus(node, `已读取 ${models.length} 个模型；能力规则由每个节点单独配置`);
+  setStatus(node, `已读取 ${compatible.length} 个${kind === "image" ? "图片" : "视频"}模型及其能力；可在高级选项中覆盖`);
 }
 
 async function refreshHistory(node) {

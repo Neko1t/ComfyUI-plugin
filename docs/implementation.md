@@ -10,7 +10,7 @@
 - [惰性输入](https://docs.comfy.org/custom-nodes/backend/lazy_evaluation)：固定可选端口标记 lazy，`check_lazy_status` 仅请求本次生成启用的输入。复用或恢复已有 jobId 时不请求素材。
 - [前端扩展](https://docs.comfy.org/custom-nodes/js/javascript_overview)：`WEB_DIRECTORY` 与 `app.registerExtension`。使用原生 JavaScript 和 DOM widgets，无额外 UI 框架。
 - 原生视频采用官方源码 `InputImpl.VideoFromFile`；输入视频通过 `VideoInput.save_to` 编码为 MP4；音频将原生 AUDIO 字典编码为 WAV。
-- [VividAI 当前文档](https://vividai.run/docs)：`/v1/models`、`/v1/uploads`、`/v1/generate`。NDJSON 心跳忽略，恢复仅提交 jobId。
+- [VividAI 当前文档](https://vividai.run/docs)：`/v1/models` 返回顶层模型数组和能力字段；`/v1/uploads`、`/v1/generate` 使用文档字段。NDJSON 心跳忽略，恢复仅提交 jobId。
 
 ## 模块边界
 

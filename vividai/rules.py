@@ -31,6 +31,7 @@ def model_rule(rules_json: str, model: str) -> dict:
         if not isinstance(raw, dict):
             raise ValueError("rule is not an object")
         rule = DEFAULT_RULE | raw
+        rule["_source"] = raw.get("_source", "user") if model in rules else "default"
         for kind, bound in (("images", 9), ("videos", 3), ("audios", 3)):
             for prefix in ("max", "min"):
                 value = rule[f"{prefix}_{kind}"]
@@ -57,6 +58,88 @@ def model_rule(rules_json: str, model: str) -> dict:
         return rule
     except (ValueError, TypeError, AttributeError) as exc:
         raise ValueError("模型能力配置无效，请检查展开配置项") from exc
+
+
+def provider_rule(spec: dict) -> dict:
+    """Convert the documented /v1/models capabilities to local node settings."""
+    rule = DEFAULT_RULE | {"_source": "provider"}
+    try:
+        qualities = spec.get("qualities")
+        if qualities is not None:
+            if not isinstance(qualities, list) or not all(
+                isinstance(x, str) and x for x in qualities
+            ):
+                raise ValueError("invalid qualities")
+            rule["qualities"] = qualities
+        for plural, field, bound in (
+            ("images", "refImages", 9),
+            ("videos", "refVideos", 3),
+            ("audios", "refAudios", 3),
+        ):
+            count = spec.get(field, 0)
+            if type(count) is not int or count < 0:
+                raise ValueError("invalid reference count")
+            rule[f"max_{plural}"] = min(count, bound)
+        duration = spec.get("duration")
+        if duration is not None:
+            if not isinstance(duration, dict):
+                raise ValueError("invalid duration")
+            mode = duration.get("mode")
+            if mode == "fixed":
+                seconds = duration.get("seconds")
+                values = [seconds]
+                # Send the fixed value explicitly. This keeps the request
+                # aligned with the model contract even if the server could
+                # infer it when omitted.
+                rule["duration_required"] = True
+            elif mode == "range":
+                minimum, maximum = duration.get("min"), duration.get("max")
+                values = [minimum, maximum]
+                rule["duration_required"] = True
+            elif mode == "options":
+                values = duration.get("options")
+                if not isinstance(values, list) or not values:
+                    raise ValueError("invalid duration options")
+                rule["duration_required"] = True
+            else:
+                raise ValueError("invalid duration mode")
+            if not all(type(x) is int and 1 <= x <= 3600 for x in values):
+                raise ValueError("invalid duration values")
+            rule["duration_min"], rule["duration_max"] = min(values), max(values)
+            rule["durations"] = values if mode != "range" else []
+        return rule
+    except (ValueError, TypeError) as exc:
+        raise ValueError("VividAI 模型能力响应格式不正确") from exc
+
+
+def validate_provider_model(spec: dict, snapshot: dict, counts: dict) -> None:
+    """Reject requests that contradict the live model's server-owned limits."""
+    kind = spec.get("kind")
+    if kind and kind != snapshot["kind"]:
+        raise ValueError("所选模型类型与当前节点不匹配")
+    rule = provider_rule(spec)
+    if "qualities" in spec and rule["qualities"] and snapshot["quality"] not in rule["qualities"]:
+        raise ValueError("所选清晰度不在 VividAI 模型支持的档位中，请刷新模型列表")
+    for plural, field in (
+        ("images", "refImages"),
+        ("videos", "refVideos"),
+        ("audios", "refAudios"),
+    ):
+        if field in spec and counts.get(plural, 0) > rule[f"max_{plural}"]:
+            raise ValueError(f"{plural} 数量超过 VividAI 模型上限，请刷新模型能力配置")
+    if snapshot["kind"] != "video":
+        return
+    duration = snapshot["duration"]
+    remote = spec.get("duration")
+    if not remote:
+        return
+    mode = remote["mode"]
+    if mode == "fixed" and duration != remote["seconds"]:
+        raise ValueError("视频时长与 VividAI 模型的固定时长不符")
+    if mode == "range" and not rule["duration_min"] <= duration <= rule["duration_max"]:
+        raise ValueError("视频时长不在 VividAI 模型允许的范围内")
+    if mode == "options" and duration not in rule["durations"]:
+        raise ValueError("视频时长不在 VividAI 模型支持的可选值中")
 
 
 def _content_text(content) -> list[str]:

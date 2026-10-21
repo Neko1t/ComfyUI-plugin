@@ -13,6 +13,8 @@ from urllib.parse import urlsplit
 
 import httpx
 
+from .rules import provider_rule
+
 
 class ProviderError(RuntimeError):
     pass
@@ -79,15 +81,29 @@ class Client:
             message = "请求被服务端拒绝"
         raise ProviderError(f"VividAI HTTP {response.status_code}: {self._message(message)}")
 
-    async def models(self) -> list[str]:
+    async def models(self) -> list[dict]:
         response = await self.api.get("/v1/models")
         await self._status(response)
         try:
-            return list(
-                dict.fromkeys(
-                    x["id"] for x in response.json()["data"] if isinstance(x.get("id"), str)
-                )
-            )
+            data = response.json()
+            # The current VividAI response is a top-level array. Keep support
+            # for older OpenAI-style gateways that wrap the array in `data`.
+            if isinstance(data, dict):
+                data = data["data"]
+            if not isinstance(data, list):
+                raise TypeError("models is not a list")
+            models = {}
+            for item in data:
+                if not isinstance(item, dict) or not isinstance(item.get("id"), str):
+                    raise TypeError("invalid model")
+                model_id = item["id"].strip()
+                if not model_id:
+                    raise ValueError("empty model ID")
+                if "kind" in item and not isinstance(item["kind"], str):
+                    raise TypeError("invalid model kind")
+                provider_rule(item)
+                models[model_id] = item | {"id": model_id}
+            return list(models.values())
         except (KeyError, TypeError, ValueError) as exc:
             raise ProviderError("模型列表响应格式不正确") from exc
 

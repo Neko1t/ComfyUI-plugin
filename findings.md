@@ -8,7 +8,7 @@ See docs/specification.md, confirmed by the user on 2026-10-17 after the design 
 
 Context7's VividAI index is stale. A real browser read of https://vividai.run/docs on 2026-10-17 shows the current public API uses /v1/uploads and /v1/generate, not /v1/videos or /v1/images/generations. Preserve this distinction when implementing.
 
-- GET /v1/models: enabled image/video model IDs only; cached by the service for 10 minutes.
+- GET /v1/models: a top-level JSON array of enabled, priced models; each item includes `id`, `kind`, `qualities`, optional `duration` (`fixed`/`range`/`options`) and reference limits (`refImages`, `refVideos`, `refAudios`). The service caches the list for 10 minutes.
 - POST /v1/uploads: kind and mime; returns key, pre-signed PUT url and expiration. PUT Content-Type must exactly match mime.
 - Upload lifetime 30 minutes. Images <=20 MB (png/jpeg/webp); video/audio <=40 MB (mp4/webm/mov, mp3/wav/m4a/ogg respectively).
 - POST /v1/generate: JSON model/prompt/quality/ratio/duration/refs; prompt <=5000 characters. Range-duration video models require duration. refs are uploaded object keys.

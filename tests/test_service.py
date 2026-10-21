@@ -6,7 +6,15 @@ import pytest
 from PIL import Image
 
 from vividai.client import AmbiguousSubmission, PendingJob, ProviderError, RemoteFailure
-from vividai.rules import DEFAULT_RULE, model_rule, normalize_prompt, payload, ports
+from vividai.rules import (
+    DEFAULT_RULE,
+    model_rule,
+    normalize_prompt,
+    payload,
+    ports,
+    provider_rule,
+    validate_provider_model,
+)
 from vividai.service import Service
 from vividai.storage import Store
 
@@ -26,7 +34,7 @@ class FakeClient:
         pass
 
     async def models(self):
-        return ["model-with-changing-name"]
+        return [{"id": "model-with-changing-name", "kind": "image", "qualities": ["1K"]}]
 
     async def generate(self, payload, *, job_id, on_job, **kwargs):
         if job_id:
@@ -178,6 +186,52 @@ def test_video_duration_is_required_by_default_and_is_sent():
 
     snapshot["duration"] = 6
     assert payload(snapshot, reference_counts={})["duration"] == 6
+
+
+def test_documented_model_capabilities_select_duration_and_reference_limits():
+    spec = {
+        "id": "video-new",
+        "kind": "video",
+        "qualities": ["480p", "720p"],
+        "duration": {"mode": "range", "min": 4, "max": 15},
+        "refImages": 9,
+        "refVideos": 3,
+        "refAudios": 0,
+    }
+    rule = provider_rule(spec)
+    assert rule["qualities"] == ["480p", "720p"]
+    assert (rule["duration_required"], rule["duration_min"], rule["duration_max"]) == (
+        True,
+        4,
+        15,
+    )
+    assert ports(rule) == [
+        *(f"image_{i}" for i in range(1, 10)),
+        *(f"video_{i}" for i in range(1, 4)),
+    ]
+    snapshot = {
+        "kind": "video",
+        "quality": "480p",
+        "duration": 6,
+    }
+    validate_provider_model(spec, snapshot, {"images": 0, "videos": 0, "audios": 0})
+    with pytest.raises(ValueError, match="模型上限"):
+        validate_provider_model(spec, snapshot, {"audios": 1})
+    with pytest.raises(ValueError, match="范围"):
+        validate_provider_model(spec, snapshot | {"duration": 0}, {})
+    with pytest.raises(ValueError, match="类型"):
+        validate_provider_model(spec, snapshot | {"kind": "image"}, {})
+
+    fixed = provider_rule(spec | {"duration": {"mode": "fixed", "seconds": 10}})
+    assert fixed["duration_required"] is True
+    with pytest.raises(ValueError, match="固定时长"):
+        validate_provider_model(
+            spec | {"duration": {"mode": "fixed", "seconds": 10}},
+            snapshot,
+            {},
+        )
+    options = provider_rule(spec | {"duration": {"mode": "options", "options": [5, 10]}})
+    assert options["durations"] == [5, 10]
 
 
 def test_normalize_openai_prompt_shapes():
