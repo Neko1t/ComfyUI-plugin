@@ -232,6 +232,8 @@ def test_documented_model_capabilities_select_duration_and_reference_limits():
         )
     options = provider_rule(spec | {"duration": {"mode": "options", "options": [5, 10]}})
     assert options["durations"] == [5, 10]
+    optional = provider_rule({"id": "video-legacy", "kind": "video", "qualities": ["720p"]})
+    assert optional["duration_required"] is False
 
 
 def test_normalize_openai_prompt_shapes():

@@ -63,6 +63,10 @@ def model_rule(rules_json: str, model: str) -> dict:
 def provider_rule(spec: dict) -> dict:
     """Convert the documented /v1/models capabilities to local node settings."""
     rule = DEFAULT_RULE | {"_source": "provider"}
+    # VividAI documents duration as optional unless a model advertises a
+    # range/options constraint. Unknown model metadata is left permissive and
+    # still sent to the server for its final validation.
+    rule["duration_required"] = False
     try:
         qualities = spec.get("qualities")
         if qualities is not None:

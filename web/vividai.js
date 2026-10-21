@@ -96,6 +96,7 @@ function currentRule(node) {
 
 function providerRule(model) {
   const rule = { ...DEFAULT_RULE, _source: "provider" };
+  rule.duration_required = false;
   if (Array.isArray(model.qualities)) rule.qualities = model.qualities;
   for (const [field, name, bound] of [
     ["refImages", "max_images", 9], ["refVideos", "max_videos", 3],
